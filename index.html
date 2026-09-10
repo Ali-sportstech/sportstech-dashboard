@@ -167,7 +167,7 @@
   <div class="topbar-inner">
     <a href="https://ali-sportstech.github.io/monitoring-hub/" class="hub-link">🏠 Zur Übersicht</a>
     <div class="brand">🏋️ sportstech.de <span>Monitoring</span></div>
-    <div class="updated">Aktualisiert: 10.09.2026 12:59</div>
+    <div class="updated">Aktualisiert: 10.09.2026 14:41</div>
   </div>
   <div class="nav" id="mainNav">
     <div class="navbtn active" data-view="overview">📊 Übersicht</div>
@@ -506,14 +506,17 @@ function renderChanges() {
   body.innerHTML = items.map(c => `
     <div class="list-row">
       <div class="date-tag">${c.date}</div>
-      <div class="name clickable" data-product-b64="${btoa(unescape(encodeURIComponent(c.product)))}">
-        <span class="prod-link">${c.product}</span>
-        <div class="cat">${c.category} · ${FIELD_LABEL[c.field] || c.field} · <span style="text-decoration:underline">🕓 Verlauf ansehen</span></div>
+      <div class="name">
+        <span class="prod-link"><a href="${c.url || '#'}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${c.product}</a></span>
+        <div class="cat">${c.category} · ${FIELD_LABEL[c.field] || c.field} · <span class="history-trigger" data-product-b64="${btoa(unescape(encodeURIComponent(c.product)))}" style="cursor:pointer;text-decoration:underline">🕓 Verlauf ansehen</span></div>
       </div>
       <div class="amt">${c.old_value}${FIELD_UNIT[c.field]||''} → ${c.new_value}${FIELD_UNIT[c.field]||''} ${diffSpan(c.diff, FIELD_UNIT[c.field]||'')}</div>
     </div>`).join('');
-  body.querySelectorAll('[data-product-b64]').forEach(el => {
-    el.addEventListener('click', () => openHistoryModal(decodeURIComponent(escape(atob(el.dataset.productB64)))));
+  body.querySelectorAll('.history-trigger').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openHistoryModal(decodeURIComponent(escape(atob(el.dataset.productB64))));
+    });
   });
 }
 
@@ -525,9 +528,9 @@ function renderBadges() {
   }
   body.innerHTML = ACTIVE_BADGES.map(p => `
     <div class="list-row">
-      <div class="name clickable" data-product-b64="${btoa(unescape(encodeURIComponent(p.name)))}">
-        <span class="prod-link">${p.name}</span>
-        <div class="cat">${p.category}</div>
+      <div class="name">
+        <span class="prod-link"><a href="${p.url || '#'}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${p.name}</a></span>
+        <div class="cat">${p.category} · <span class="history-trigger" data-product-b64="${btoa(unescape(encodeURIComponent(p.name)))}" style="cursor:pointer;text-decoration:underline">🕓 Verlauf</span></div>
       </div>
       <div class="amt">
         <span class="badge uvp">🏷️ UVP ${fmtEur(p.uvp)}</span>
@@ -535,8 +538,11 @@ function renderBadges() {
         ${p.saved_amount !== null && p.saved_amount !== undefined ? ` · spart ${fmtEur(p.saved_amount)}` : ''}
       </div>
     </div>`).join('');
-  body.querySelectorAll('[data-product-b64]').forEach(el => {
-    el.addEventListener('click', () => openHistoryModal(decodeURIComponent(escape(atob(el.dataset.productB64)))));
+  body.querySelectorAll('.history-trigger').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openHistoryModal(decodeURIComponent(escape(atob(el.dataset.productB64))));
+    });
   });
 }
 
